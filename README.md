@@ -4,7 +4,7 @@ We are trying to detect skin abnormalities without the need for invasive surgeri
 # Quick start
 If you quickly want to get up and running with the Machine Learning part then:
 - Do a git clone of the repo: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
-   there you'll find useful resources and all you need to do to get started. 
+there you'll find useful resources and everything you need to get started. 
 
 # Prerequisites
 We are running the models on Google Colab, and storing everying on Google Drive.
