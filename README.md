@@ -8,7 +8,7 @@ there you'll find useful resources like datasets and everything you need to get 
 
 # Prerequisites
 We are running these models on Google Colab, and storing everying on a Google Drive.<br>
-So, you may need enough storage on your Google cloud if you want to follow our approach exactly.<br><br>
+So, you may need enough storage on your Google cloud if you want to follow our approach directly.<br><br>
 
 Alternatively, if you don't want to run this on Google Colab, then you'll need:
 - Linux or macOS 
@@ -17,7 +17,10 @@ Alternatively, if you don't want to run this on Google Colab, then you'll need:
 
 # How to set up
 The most critical part of this project is to set up your data correctly.<br>
-Since we are using paired (OCT->H&E) images, it's important that the model doesn't see the test images during training.
+Since we are using paired (OCT->H&E) images, it's important that our models don't actually see the test images during training.<br><br>
+
+We've attached a couple of <a href="https://github.com/WinetraubLab/OCT2Hist-RunMLModels">scripts</a> that you can use to organize your directories. 
+
 
 
 Make sure training images are where? and test images are ?
