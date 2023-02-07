@@ -1,5 +1,5 @@
 # OCT to Histology - Using CycleGAN and Pix2Pix
-What is the purpose of the code here?
+With the help of Machine Learning, we are trying to detect skin abnormalities without the need for invasive surgeries.
 
 # How to set up
 Make sure training images are where? and test images are ?
