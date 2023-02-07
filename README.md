@@ -3,7 +3,7 @@ We are trying to detect skin abnormalities without the need for invasive surgeri
 
 # Quick start
 If you quickly want to get up and running with the Machine Learning part then:
-- Do a git clone of the repo: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
+- Do a git clone of the repo: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix <br>
 there you'll find useful resources and everything you need to get started. 
 
 # Prerequisites
