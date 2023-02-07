@@ -1,4 +1,4 @@
-# What is in This Repository
+# OCT to Histology - Using CycleGAN and Pix2Pix
 What is the purpose of the code here?
 
 # How to set up
