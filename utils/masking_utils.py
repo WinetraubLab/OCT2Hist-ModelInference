@@ -29,18 +29,18 @@ def mask_image(oct_input_image_path):
 
   # Average over x axis (rows) to get one value for each depth
   m_mean = np.nanmean(filt_img, axis=1);
-  print(m_mean.shape)
-  print(m_mean)
+  # print(m_mean.shape)
+  # print(m_mean)
 
   # Then we figure out what is the "brightest" row by taking percentile:
   m_mean_max = np.percentile(m_mean, 99, axis=0)
-  print(m_mean_max.shape)
-  print(m_mean_max)
+  # print(m_mean_max.shape)
+  # print(m_mean_max)
 
   # Then we figure out what is the noise floor of the device, by examining the bottom 50 rows of OCT image
   m_mean_min = np.mean(m_mean[-50:]);
-  print(m_mean_min.shape)
-  print(m_mean_min)
+  # print(m_mean_min.shape)
+  # print(m_mean_min)
 
   # Finally we define a threshold for OCT intensity, anything below that will be blacked out
   minSignal = 0.28 * (m_mean_max - m_mean_min) + m_mean_min;
@@ -62,9 +62,9 @@ def mask_image(oct_input_image_path):
   # assume there's a non-black area around the middle of the image, surrounded by black area.
   # Find the first black line, and the next non black line.
   m_mean_arr = np.copy(m_mean[:, 0])
-  print("rows indicating black segments in image:")
+  # print("rows indicating black segments in image:")
   first_zero, next_non_zero = get_first_zero_and_next_non_zero_idx(m_mean_arr);
-  print(first_zero, next_non_zero)
+  # print(first_zero, next_non_zero)
 
   # Do the same to the vertically flipped (mirrored around the x axis) image.
   flipped = np.copy(np.flip(m_mean_arr))
@@ -72,14 +72,14 @@ def mask_image(oct_input_image_path):
   h = len(flipped)
   first_zero_from_the_end = h - first_zero_from_the_end
   next_non_zero_from_the_end = h - next_non_zero_from_the_end
-  print(first_zero_from_the_end, next_non_zero_from_the_end)
+  # print(first_zero_from_the_end, next_non_zero_from_the_end)
   # showImg(filt_img)
 
   # "Blackout" everything above and below the tissue-gel interface
   margin = 10;  # margin around the high-enough-snr area.
   top = next_non_zero - margin;
   bottom = next_non_zero_from_the_end + margin;
-  print(top, bottom)
+  # print(top, bottom)
   img[:top, :] = 0
   img[bottom:, :] = 0
   # showImg(img)
@@ -100,8 +100,6 @@ def mask_image(oct_input_image_path):
   new_h, new_w = 256, 256
   resized = cv2.resize(cropped_img, (new_w, new_h), interpolation=cv2.INTER_AREA)
   # showImg(resized)
-
-  from utils.masking import showTwoImgs
 
   # show processed image next to the original image
   img = readImgByPath(path_new_image)
