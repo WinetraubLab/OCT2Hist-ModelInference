@@ -102,6 +102,6 @@ def mask_image(oct_input_image_path):
   # showImg(resized)
 
   # show processed image next to the original image
-  img = readImgByPath(path_new_image)
+  # img = readImgByPath(path_new_image)
   # showTwoImgs(img, resized)
-  return img
+  return resized
