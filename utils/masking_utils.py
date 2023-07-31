@@ -24,14 +24,14 @@ def mask_image(oct_input_image_path):
   filt_below_min_signal(filt_img)
 
   # height, mid = blackout_out_of_tissue_gel(filt_img, img)
-  img = blackout_out_of_tissue_gel(filt_img, img)
+  img, extra_mid = blackout_out_of_tissue_gel(filt_img, img)
   #
   # top_row = max(mid - 128, 0)
   # bottom_row = min(mid + 128, height)
   # cropped_img = img[top_row:bottom_row, :, :]
 
 
-  return img, mid
+  return img, extra_mid
 
 
 def blackout_out_of_tissue_gel(filt_img, img):
@@ -61,7 +61,7 @@ def blackout_out_of_tissue_gel(filt_img, img):
   mid = int((bottom + top) / 2.0);
   filt_img[:mid, :] = 1;
   img[filt_img == 0] = 0;
-  return img
+  return img,mid
 
 
 def filt_below_min_signal(filt_img):
