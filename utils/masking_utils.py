@@ -101,7 +101,25 @@ def smooth(img):
   filt_img = cv2.GaussianBlur(img, (filter_size, filter_size), sigma)
   return filt_img
 
+
+def oct_get_image_and_preprocess(oct_input_image_path):
+  # Path to an OCT image to convert
+  oct_input_image_path = "/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x Raw Data Used In Paper (Paper V2)/LG-19 - Slide04_Section02 (Fig 3.c)/OCTAligned.tiff"
+
+  # how many microns per pixel for each axis
+  microns_per_pixel_z = 1
+  microns_per_pixel_x = 1
+
+  # Path to a folder in drive to output the converted H&E images, leave blank if
+  # you don't want to save H&E image to drive.
+  histology_output_image_folder = "
+
+
+
+
 if __name__ == '__main__':
+  o2h_input = oct_get_image_and_preprocess("/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_input.tiff")
+
   oct_input_image_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_input.tiff"
   oct_image_orig = cv2.imread(oct_input_image_path)
   oct_image_orig = cv2.cvtColor(oct_image_orig, cv2.COLOR_BGR2RGB)
