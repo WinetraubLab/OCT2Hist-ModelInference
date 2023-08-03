@@ -112,7 +112,7 @@ def oct_get_image_and_preprocess(oct_input_image_path):
 
   # Path to a folder in drive to output the converted H&E images, leave blank if
   # you don't want to save H&E image to drive.
-  histology_output_image_folder = "
+  histology_output_image_folder = ""
 
 
 
