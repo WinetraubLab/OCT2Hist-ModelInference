@@ -22,7 +22,7 @@ def mask_image(img):
   min_signal = find_min_signal(filt_img)
   filt_img[filt_img < min_signal] = 0
   filt_img = blackout_out_of_tissue_gel(filt_img, float_img, min_signal)
-  img[(filt_img == 0)] = 0
+  img[(filt_img == 0.0) | np.isnan(filt_img)] = 0
   img = (float_img*255).astype(np.uint8)
   return img, filt_img
 
