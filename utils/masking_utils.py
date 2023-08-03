@@ -15,11 +15,16 @@ def get_first_zero_and_next_non_zero_idx(arr):
   return first_zero, next_non_zero
 
 def mask_image(img):
-  filt_img = smooth(img)
+  assert(img.dtype == np.uint8)
+  float_img = img.astype(np.float64)/255.0
+  float_img[img==0] = np.nan
+  filt_img = smooth(float_img)
   min_signal = find_min_signal(filt_img)
   filt_img[filt_img < min_signal] = 0
-  img = blackout_out_of_tissue_gel(filt_img, img, min_signal)
-  return img
+  filt_img = blackout_out_of_tissue_gel(filt_img, float_img, min_signal)
+  img[(filt_img == 0)] = 0
+  img = (float_img*255).astype(np.uint8)
+  return img, filt_img
 
 
 def find_the_longest_non_zero_row(m_mean_arr):
@@ -60,8 +65,7 @@ def blackout_out_of_tissue_gel(filt_img, img, min_signal, top_bottom_10percent_a
   # filt_img[:start] = 0
   #apply filter on image, for the lower half (row > end), and below signal (filt_img == 0).
   filt_img[:mid,:,:] = 1
-  img[(filt_img == 0)] = 0
-  return img
+  return filt_img
 
 
 def blackout_10percent(filt_img):
@@ -98,7 +102,16 @@ def smooth(img):
   return filt_img
 
 if __name__ == '__main__':
-  oct_input_image_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/emilie_image.png"
+  oct_input_image_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_input.tiff"
   oct_image_orig = cv2.imread(oct_input_image_path)
   oct_image_orig = cv2.cvtColor(oct_image_orig, cv2.COLOR_BGR2RGB)
-  masked_image = mask_image(oct_image_orig)
+
+  masked_image, mask = mask_image(oct_image_orig)
+
+  #make it boolean
+  mask[(mask > 0)] = 1
+  #reverse colors
+  mask = 1- mask
+  mask_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_mask.tiff"
+  gt_mask = cv2.imread(mask_path)
+  gt_mask = cv2.cvtColor(gt_mask, cv2.COLOR_BGR2RGB)
