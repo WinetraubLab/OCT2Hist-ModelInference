@@ -2,6 +2,7 @@
 # us to evaluate the model by providing an input image
 
 import os
+import subprocess
 from google.colab import drive
 
 # Temporary folder that we use to collect and organize files
@@ -15,14 +16,22 @@ model_folder = "/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2
 def setup_network():
     """ Set up environment load the network parameters, run this code once """
     
+    def run_subprocess(cmd):
+        result = subprocess.run([cmd], capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Command failed with exit code {result.returncode}.")
+            print("Error message:")
+            print(result.stderr)
+            raise RuntimeError("See error")
+        
     # Install dependencies
-    !pip install -r {base_folder}/requirements.txt
+    run_subprocess('pip install -r {base_folder}/requirements.txt')
     
     # Mount google drive (if not already mounted)
     drive.mount('/content/drive/')
 
     # Copy model parameters to the correct location
-    !mkdir {base_folder}/checkpoints
-    !mkdir {base_folder}/checkpoints/pix2pix/
-    !cp "{model_folder}/latest_net_G.pth" {base_folder}/checkpoints/pix2pix/
-    !cp "{model_folder}/latest_net_D.pth" {base_folder}/checkpoints/pix2pix/
+    run_subprocess('mkdir {base_folder}/checkpoints')
+    run_subprocess('mkdir {base_folder}/checkpoints/pix2pix/')
+    run_subprocess('cp "{model_folder}/latest_net_G.pth" {base_folder}/checkpoints/pix2pix/')
+    run_subprocess('cp "{model_folder}/latest_net_D.pth" {base_folder}/checkpoints/pix2pix/')
