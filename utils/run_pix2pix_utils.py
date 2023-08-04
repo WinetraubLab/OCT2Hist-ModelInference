@@ -1,8 +1,8 @@
 # This util is a wrapper to the pix2pix algorithm and allows
 # us to evaluate the model by providing an input image
 
+import os
 from google.colab import drive
-
 
 # Temporary folder that we use to collect and organize files
 # Base folder already contains pix2pix code from https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/tree/9f8f61e5a375c2e01c5187d093ce9c2409f409b0
@@ -18,7 +18,7 @@ def setup_network():
     # Install dependencies
     !pip install -r {base_folder}/requirements.txt
     
-    # Mount google drive
+    # Mount google drive (if not already mounted)
     drive.mount('/content/drive/')
 
     # Copy model parameters to the correct location
