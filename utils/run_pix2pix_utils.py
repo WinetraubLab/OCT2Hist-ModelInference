@@ -17,7 +17,7 @@ def setup_network():
     """ Set up environment load the network parameters, run this code once """
     
     def run_subprocess(cmd):
-        result = subprocess.run([cmd], capture_output=True, text=True)
+        result = subprocess.run([cmd], capture_output=True, text=True, shell=True)
         if result.returncode != 0:
             print(f"{cmd}")
             print(f"Command failed with exit code {result.returncode}.")
