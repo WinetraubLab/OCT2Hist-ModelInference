@@ -4,6 +4,15 @@ import cv2;
 from utils.show_images import readImgByPath
 
 
+#high level masking description:
+# (2) "Blackout" everything way above and way below the tissue-gel interface
+# The idea is that anything that is much higher than the tissue-gel interface is not relevant because it is deep in the gel, and anything way below the interface is also not relevant because it is deep in the tissue and we don't get OCT signal that deep.
+
+# The sub steps of this are:
+# (a) We manually find the average pixel depth of the tissue-gel interface. This is not an accurate step, we basically use a mouse to click on the image where we think the average is. We call this depth Z
+# (b) We black out anything above Z-100 pixels (in practice this is Z-100 microns)
+# (c) We black out anything below Z+500 pixels. (in practice this is Z+500 microns)
+
 def get_first_zero_and_next_non_zero_idx(arr):
   """
   For an input array <arr>, returns the first zero index i_0, and the next non-zero index i_1 > i_0.
