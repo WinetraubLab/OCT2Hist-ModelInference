@@ -1,7 +1,7 @@
 import numpy as np;
 import cv2;
 
-from utils.img_utils import readImgByPath
+from utils.show_images import readImgByPath
 
 
 def get_first_zero_and_next_non_zero_idx(arr):
