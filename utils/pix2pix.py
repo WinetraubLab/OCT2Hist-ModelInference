@@ -4,6 +4,7 @@
 import cv2
 import numpy as np
 import os
+import shutil
 import subprocess
 from google.colab import drive
 
@@ -56,6 +57,8 @@ def run_network (im):
     
     # Write input image in the right folder structure
     images_dir = f"{base_folder}/dataset/test"
+    if os.path.exists(images_dir):
+        shutil.rmtree(images_dir)
     os.makedirs(images_dir)
     im_input_path = os.path.join(images_dir,"im1.jpg")
     cv2.imwrite(im_input_path, padded)
