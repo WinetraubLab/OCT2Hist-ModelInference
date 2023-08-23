@@ -2,7 +2,7 @@
 # us to evaluate the model by providing an input image
 
 import cv2
-import numpy
+import numpy as np
 import os
 import subprocess
 from google.colab import drive
