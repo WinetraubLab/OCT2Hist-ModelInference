@@ -57,7 +57,7 @@ def run_network (im):
     # Write input image in the right folder structure
     images_dir = f"{base_folder}/dataset/test"
     os.makedirs(images_dir)
-    im_input_path = os.path.join(dir,"im1.jpg")
+    im_input_path = os.path.join(images_dir,"im1.jpg")
     cv2.imwrite(im_input_path, padded)
     
     # Run pix2pix
