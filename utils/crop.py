@@ -1,4 +1,4 @@
-def crop(preprocessed_img):
+def crop(preprocessed_img, width, height, x0, z0):
     #slice from image
     # width = 256 * 4
     # height = 256 * 2
