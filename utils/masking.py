@@ -30,10 +30,10 @@ def mask_image(img):
   filt_img = smooth(float_img)
   min_signal = find_min_signal(filt_img)
   filt_img[filt_img < min_signal] = 0
-  filt_img = blackout_out_of_tissue_gel(filt_img, float_img, min_signal)
+  filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img, min_signal)
   float_img[(filt_img == 0.0) | np.isnan(filt_img)] = 0
   img = (float_img*255).astype(np.uint8)
-  return img, filt_img
+  return img, filt_img, filter_top_bottom
 
 
 def find_the_longest_non_zero_row(m_mean_arr):
@@ -70,11 +70,11 @@ def blackout_out_of_tissue_gel(filt_img, img, min_signal, top_bottom_10percent_a
   m_mean_arr = np.copy(m_mean[:, 0])
   begin,end = find_the_longest_non_zero_row(m_mean_arr)
   mid = int((begin+end)/2)
-  #remove any line which is not part of the longest non zero sequence
   # filt_img[:start] = 0
-  #apply filter on image, for the lower half (row > end), and below signal (filt_img == 0).
+  filter_copy = deepcopy(filt_img)
+  #prepare filter, for the lower half (row > mid), and below signal (filt_img == 0).
   filt_img[:mid,:,:] = 1
-  return filt_img
+  return filt_img, filter_copy
 
 
 def blackout_10percent(filt_img):
