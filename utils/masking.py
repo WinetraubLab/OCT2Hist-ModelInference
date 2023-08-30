@@ -2,7 +2,7 @@ import numpy as np;
 import cv2;
 
 from utils.show_images import readImgByPath
-
+from copy import deepcopy
 
 #high level masking description:
 # (2) "Blackout" everything way above and way below the tissue-gel interface
