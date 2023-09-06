@@ -26,7 +26,7 @@ def _run_subprocess(cmd):
 # path_to_generaor_network - path to generator network (*.pth file), default value is the OCT2Hist network
 # Set up environment load the network parameters, run this code once
 def setup_network(
-    path_to_generaor_network = "/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x Model (Paper V2)/latest_net_G.pth"
+    path_to_generaor_network = "/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x OCT2Hist Model (Paper V2)/latest_net_G.pth"
     ):
     
     # Install dependencies
