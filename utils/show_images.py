@@ -27,7 +27,7 @@ def showTwoImgs(img1, img2):
   plt.subplot(1,2,2);
   plt.imshow(img2);
 
-def showThreeImgs(image1, image2, image_to_mask, masks = None, titles = []):
+def showThreeImgs(image1, image2, image_to_mask, masks = None, titles = None):
   # Create a figure with three subplots
   fig, axes = plt.subplots(1, 3, figsize=(15, 5))
   if titles
