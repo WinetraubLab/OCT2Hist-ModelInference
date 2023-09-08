@@ -27,21 +27,33 @@ def showTwoImgs(img1, img2):
   plt.subplot(1,2,2);
   plt.imshow(img2);
 
-def showThreeImgs(image1, image2, image3):
+def showThreeImgs(image1, image2, image_to_mask, masks = None):
   # Create a figure with three subplots
   fig, axes = plt.subplots(1, 3, figsize=(15, 5))
   
   # Display the first image in the first subplot
-  axes[0].imshow(image1)  # Change 'gray' to the appropriate colormap
+  axes[0].imshow(image1)
   axes[0].set_title('Image 1')
   
   # Display the second image in the second subplot
-  axes[1].imshow(image2)  # Change 'gray' to the appropriate colormap
+  axes[1].imshow(image2)
   axes[1].set_title('Image 2')
   
   # Display the third image in the third subplot
-  axes[2].imshow(image3)  # Change 'gray' to the appropriate colormap
+  axes[2].imshow(image_to_mask)
   axes[2].set_title('Image 3')
+
+  if masks:
+    if len(masks) == 0:
+      return
+    img = np.ones((masks[0]['segmentation'].shape[0], masks[0]['segmentation'].shape[1], 4))
+    img[:,:,3] = 0
+    for mask in masks:
+        m = mask['segmentation']
+        color_mask = np.concatenate([np.random.random(3), [0.35]])
+        img[m] = color_mask
+    axes[2].imshow(img)
+
   
   # Adjust spacing between subplots
   plt.tight_layout()
