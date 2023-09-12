@@ -64,7 +64,7 @@ def run_network (im):
     cv2.imwrite(im_input_path, padded)
     
     # Run pix2pix
-    _run_subprocess(f'python {base_folder}/test.py --netG resnet_9blocks --dataroot "{base_folder}/dataset/"  --model pix2pix --name pix2pix --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results"')
+    _run_subprocess(f'python {base_folder}/test.py --netG resnet_9blocks --dataroot "{base_folder}/dataset/"  --model pix2pix --name pix2pix --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
 
     # Load output image
     im_output_path = f"{base_folder}/results/pix2pix/test_latest/images/im1_fake_B.png"
