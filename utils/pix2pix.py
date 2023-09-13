@@ -11,7 +11,7 @@ from google.colab import drive
 # Temporary folder that we use to collect and organize files
 # Base folder already contains pix2pix code from https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/tree/9f8f61e5a375c2e01c5187d093ce9c2409f409b0
 base_folder = "/content/OCT2Hist-UseModel/pytorch-CycleGAN-and-pix2pix"
-base_folder = "/content/OCT2Hist-UseModel/HashtagAlignment/31\ NN\ Model"
+
 # Private module to wrapp around using cmd
 def _run_subprocess(cmd):
     result = subprocess.run([cmd], capture_output=True, text=True, shell=True)
