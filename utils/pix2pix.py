@@ -24,6 +24,15 @@ def _run_subprocess(cmd):
         print(result.stderr)
         raise RuntimeError("See error")
 
+# Create folder if it doesn't exist
+def _create_folder_if_doesnt_exist(folder_name):
+  # Check if the folder exists
+  if not os.path.exists(folder_name):
+      # If it doesn't exist, create it
+      os.mkdir(folder_name)
+  else:
+      print(f"Folder '{folder_name}' already exists.")
+
 # Run this function to set up the Neural Network with Pre-trained generator network
 # path_to_generaor_network - path to generator network (*.pth file), default value is the OCT2Hist network
 # Set up environment load the network parameters, run this code once
@@ -38,8 +47,8 @@ def setup_network(
     drive.mount('/content/drive/')
 
     # Copy model parameters to the correct location
-    _run_subprocess(f'mkdir {base_folder}/checkpoints')
-    _run_subprocess(f'mkdir {base_folder}/checkpoints/pix2pix/')
+    _create_folder_if_doesnt_exist('{base_folder}/checkpoints/')
+    _create_folder_if_doesnt_exist('{base_folder}/checkpoints/pix2pix/')
     _run_subprocess(f'cp "{path_to_generaor_network}" {base_folder}/checkpoints/pix2pix/latest_net_G.pth')
 
 # This function evaluates the neural network on input image
