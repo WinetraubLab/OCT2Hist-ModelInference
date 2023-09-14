@@ -47,8 +47,8 @@ def setup_network(
     drive.mount('/content/drive/')
 
     # Copy model parameters to the correct location
-    _create_folder_if_doesnt_exist('{base_folder}/checkpoints/')
-    _create_folder_if_doesnt_exist('{base_folder}/checkpoints/pix2pix/')
+    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/')
+    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/pix2pix/')
     _run_subprocess(f'cp "{path_to_generaor_network}" {base_folder}/checkpoints/pix2pix/latest_net_G.pth')
 
 # This function evaluates the neural network on input image
