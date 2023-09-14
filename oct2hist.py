@@ -38,8 +38,8 @@ def run_network (oct_image,
   original_height, original_width = masked_image.shape[:2]
   if appy_resolution_matching:
     # Compute compression ratio
-    target_width = original_width * microns_per_pixel_x // 2 # Target resolution is 2 microns per pixel on x axis. We use // to round to integer
-    target_height = original_height * microns_per_pixel_z // 4 # Target resolution is 4 microns per pixel on z axis. We use // to round to integer
+    target_width = original_width * microns_per_pixel_x // 4 # Target resolution is 4 microns per pixel on x axis. We use // to round to integer
+    target_height = original_height * microns_per_pixel_z // 2 # Target resolution is 2 microns per pixel on z axis. We use // to round to integer
 
     if target_width!=256 or target_height!=256:
       raise ValueError(f"OCT2Hist works on images which have total size of 1024 microns by 512 microns (x,z). Input oct_image has size of {original_width*microns_per_pixel_x} by {original_height*microns_per_pixel_z} microns. Please crop or pad image")
