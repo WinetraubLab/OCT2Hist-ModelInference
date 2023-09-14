@@ -30,7 +30,7 @@ def run_network (oct_image,
                 ):
   # Mask
   if apply_masking:
-    masked_image, _* = mask_image(oct_image)    
+    masked_image, _ = mask_image(oct_image)    
   else:
     masked_image = oct_image.copy()
 
