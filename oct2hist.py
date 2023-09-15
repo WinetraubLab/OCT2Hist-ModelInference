@@ -1,6 +1,7 @@
 from utils.show_images import *
 from utils.crop import crop
 from utils.masking import mask_image
+from utils.gray_level_rescale import gray_level_rescale
 import utils.pix2pix as pix2pix
 import cv2
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ def setup_network():
 #   microns_per_pixel_z - how many microns is each pixel on z direction (axial direction). This is determined by spectrumeter width not light source FWHM.
 # Preprocessing configuration. Set this parameters to false if you would like to skip them
 #   apply_masking - should we perform the mask step?
+#   apply_gray_level_scaling - should we rescale gray level to take full advantage of dynamic range?
 #   appy_resolution_matching - should we match resolution to the trained images?
 # Outputs:
 #   output image (in target domain, e.g. virtual histology) in cv format
@@ -26,16 +28,22 @@ def run_network (oct_image,
                 microns_per_pixel_x=1,
                 microns_per_pixel_z=1,
                 apply_masking=True,
+                apply_gray_level_scaling-True,
                 appy_resolution_matching=True,
                 ):
   # Mask
   if apply_masking:
     masked_image, *_ = mask_image(oct_image)    
   else:
-    masked_image = oct_image.copy()
+    masked_image = oct_image
+
+  if apply_gray_level_scaling:
+    rescaled_image = gray_level_rescale(masked_image)
+  else:
+    rescaled_image = masked_image
 
   # Apply resolution matching
-  original_height, original_width = masked_image.shape[:2]
+  original_height, original_width = rescaled_image.shape[:2]
   if appy_resolution_matching:
     # Compute compression ratio
     target_width = original_width * microns_per_pixel_x // 4 # Target resolution is 4 microns per pixel on x axis. We use // to round to integer
@@ -45,9 +53,9 @@ def run_network (oct_image,
       raise ValueError(f"OCT2Hist works on images which have total size of 1024 microns by 512 microns (x,z). Input oct_image has size of {original_width*microns_per_pixel_x} by {original_height*microns_per_pixel_z} microns. Please crop or pad image")
 
     # Apply the resolution change
-    o2h_input = cv2.resize(masked_image, [target_height,target_width] , interpolation=cv2.INTER_AREA)
+    o2h_input = cv2.resize(rescaled_image, [target_height,target_width] , interpolation=cv2.INTER_AREA)
   else:
-    o2h_input = masked_image.copy()
+    o2h_input = rescaled_image
 
   # Run the neural net
   virtual_histology_image = pix2pix.run_network(o2h_input)
