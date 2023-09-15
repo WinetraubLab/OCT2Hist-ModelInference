@@ -28,7 +28,7 @@ def run_network (oct_image,
                 microns_per_pixel_x=1,
                 microns_per_pixel_z=1,
                 apply_masking=True,
-                apply_gray_level_scaling-True,
+                apply_gray_level_scaling=True,
                 appy_resolution_matching=True,
                 ):
   # Mask
