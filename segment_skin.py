@@ -16,7 +16,7 @@ def run_network (oct_image):
   input_image = cv2.resize(oct_image, [256,256] , interpolation=cv2.INTER_AREA)
   
   # Run the neural net
-  mask_image = pix2pix.run_network(input_image,"segment_skin")
+  mask_image = pix2pix.run_network(input_image,"segment_skin", netG_flag="")
 
   # Convert the color image to grayscale and filter to bolean
   boolean_image = cv2.cvtColor(mask_image, cv2.COLOR_BGR2GRAY) > 127
