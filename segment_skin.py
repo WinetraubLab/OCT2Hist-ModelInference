@@ -12,9 +12,11 @@ def setup_network():
 # Outputs:
 #   mask - specifying for each pixel is it inside tissue (true) or outside tissue (false)
 def run_network (oct_image):
+  # Rescale
+  input_image = cv2.resize(oct_image, [256,256] , interpolation=cv2.INTER_AREA)
   
   # Run the neural net
-  mask_image = pix2pix.run_network(oct_image,"segment_skin")
+  mask_image = pix2pix.run_network(input_image,"segment_skin")
 
   # Convert the color image to grayscale and filter to bolean
   boolean_image = cv2.cvtColor(mask_image, cv2.COLOR_BGR2GRAY) > 127
