@@ -9,7 +9,7 @@ import numpy as np
 
 # Run this function to set up the Neural Network with Pre-trained oct2hist generator network
 def setup_network():
-  pix2pix.setup_network("/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x OCT2Hist Model (Paper V2)/latest_net_G.pth")
+  pix2pix.setup_network("/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x OCT2Hist Model (Paper V2)/latest_net_G.pth","oct2hist")
 
 # This function evaluates the neural network on input image
 # Inputs:
@@ -58,7 +58,7 @@ def run_network (oct_image,
     o2h_input = rescaled_image
 
   # Run the neural net
-  virtual_histology_image = pix2pix.run_network(o2h_input)
+  virtual_histology_image = pix2pix.run_network(o2h_input,"oct2hist")
 
   # Post process, return image to original size
   virtual_histology_image_resized = cv2.resize(virtual_histology_image, [original_width,original_height] , interpolation=cv2.INTER_AREA)
