@@ -55,9 +55,10 @@ def setup_network(
 # Inputs:
 #   im - input image (input domain, e.g. OCT) in cv format (256x256x3). Input image should be masked and cropped.
 #   model_name - same name as you gave the model in setup_network step
+#   netG_flag - specify --netG
 # Outputs:
 #   output image (in target domain, e.g. virtual histology) in cv format
-def run_network (im, model_name):
+def run_network (im, model_name, netG_flag="--netG resnet_9blocks"):
     
     # Input check
     if im.shape[:2] != (256, 256):
@@ -76,7 +77,7 @@ def run_network (im, model_name):
     cv2.imwrite(im_input_path, padded)
     
     # Run pix2pix
-    _run_subprocess(f'python {base_folder}/test.py --netG resnet_9blocks --dataroot "{base_folder}/dataset/"  --model pix2pix --name {model_name} --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
+    _run_subprocess(f'python {base_folder}/test.py {netG_flag} --dataroot "{base_folder}/dataset/"  --model pix2pix --name {model_name} --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
 
     # Load output image
     im_output_path = f"{base_folder}/results/{model_name}/test_latest/images/im1_fake_B.png"
