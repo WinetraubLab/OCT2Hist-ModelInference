@@ -23,6 +23,6 @@ def run_network (oct_image):
   mask_rescaled_image = cv2.resize(cv2.cvtColor(mask_image, cv2.COLOR_BGR2GRAY), [original_width, original_height] , interpolation=cv2.INTER_AREA)
 
   # Convert the color image to grayscale and filter to bolean
-  boolean_image = cv2.cvtColor(mask_rescaled_image, cv2.COLOR_BGR2GRAY) > 127
+  boolean_image = mask_rescaled_image > 127
 
   return boolean_image
