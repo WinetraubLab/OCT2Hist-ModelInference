@@ -35,9 +35,9 @@ def _create_folder_if_doesnt_exist(folder_name):
 
 # Run this function to set up the Neural Network with Pre-trained generator network
 # path_to_generaor_network - path to generator network (*.pth file), default value is the OCT2Hist network
-# Set up environment load the network parameters, run this code once
+# model_name - pick your favorate name for the model
 def setup_network(
-    path_to_generaor_network = "/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x OCT2Hist Model (Paper V2)/latest_net_G.pth"
+    path_to_generaor_network, model_name
     ):
     
     # Install dependencies
@@ -48,15 +48,16 @@ def setup_network(
 
     # Copy model parameters to the correct location
     _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/')
-    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/pix2pix/')
-    _run_subprocess(f'cp "{path_to_generaor_network}" {base_folder}/checkpoints/pix2pix/latest_net_G.pth')
+    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/{model_name}/')
+    _run_subprocess(f'cp "{path_to_generaor_network}" {base_folder}/checkpoints/{model_name}/latest_net_G.pth')
 
 # This function evaluates the neural network on input image
 # Inputs:
 #   im - input image (input domain, e.g. OCT) in cv format (256x256x3). Input image should be masked and cropped.
+#   model_name - same name as you gave the model in setup_network step
 # Outputs:
 #   output image (in target domain, e.g. virtual histology) in cv format
-def run_network (im):
+def run_network (im, model_name):
     
     # Input check
     if im.shape[:2] != (256, 256):
@@ -75,10 +76,10 @@ def run_network (im):
     cv2.imwrite(im_input_path, padded)
     
     # Run pix2pix
-    _run_subprocess(f'python {base_folder}/test.py --netG resnet_9blocks --dataroot "{base_folder}/dataset/"  --model pix2pix --name pix2pix --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
+    _run_subprocess(f'python {base_folder}/test.py --netG resnet_9blocks --dataroot "{base_folder}/dataset/"  --model pix2pix --name {model_name} --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
 
     # Load output image
-    im_output_path = f"{base_folder}/results/pix2pix/test_latest/images/im1_fake_B.png"
+    im_output_path = f"{base_folder}/results/{model_name}/test_latest/images/im1_fake_B.png"
     im_output = cv2.imread(im_output_path)
     im_output = cv2.cvtColor(im_output, cv2.COLOR_BGR2RGB)
     
