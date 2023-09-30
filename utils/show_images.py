@@ -15,10 +15,12 @@ def readImgByPath(path):
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
   return image
 
-def showImg(image):
+def showImg(image, title=""):
   """Show the image, which content is in image."""
   plt.figure()
   plt.imshow(image)
+  if title!="":
+    plt.title(title)
 
 def showTwoImgs(img1, img2):
   """Show both images, side by side."""
