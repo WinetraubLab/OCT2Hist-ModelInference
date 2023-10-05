@@ -1,5 +1,4 @@
 from utils.show_images import *
-from utils.crop import crop
 from utils.masking import mask_image
 from utils.gray_level_rescale import gray_level_rescale
 import utils.pix2pix as pix2pix
