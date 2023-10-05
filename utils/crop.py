@@ -1,7 +1,7 @@
 import numpy as np
 
 # Crop part of the image, pad with nan if target size is bigger than input image
-def crop2(input_image, target_width=1024, target_height=512, x0=0, z0=0):
+def crop(input_image, target_width=1024, target_height=512, x0=0, z0=0):
     # Get the dimensions of the input image
     input_height, input_width = input_image.shape[:2]
 
