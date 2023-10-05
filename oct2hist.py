@@ -17,6 +17,7 @@ def setup_network():
 #   microns_per_pixel_z - how many microns is each pixel on z direction (axial direction). This is determined by spectrumeter width not light source FWHM.
 # Preprocessing configuration. Set this parameters to false if you would like to skip them
 #   apply_masking - should we perform the mask step?
+#   min_signal_threshold - By default this is NaN, set to numeric value if you would like to apply a min threshold for masking rather than use algorithm.
 #   apply_gray_level_scaling - should we rescale gray level to take full advantage of dynamic range?
 #   appy_resolution_matching - should we match resolution to the trained images?
 # Outputs:
@@ -27,12 +28,13 @@ def run_network (oct_image,
                 microns_per_pixel_x=1,
                 microns_per_pixel_z=1,
                 apply_masking=True,
+                min_signal_threshold=np.nan,
                 apply_gray_level_scaling=True,
                 appy_resolution_matching=True,
                 ):
   # Mask
   if apply_masking:
-    masked_image, *_ = mask_image(oct_image)    
+    masked_image, *_ = mask_image(oct_image, min_signal_threshold=min_signal_threshold)    
   else:
     masked_image = oct_image
 
