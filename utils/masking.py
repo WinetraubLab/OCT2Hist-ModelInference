@@ -13,6 +13,35 @@ from copy import deepcopy
 # (b) We black out anything above Z-100 pixels (in practice this is Z-100 microns)
 # (c) We black out anything below Z+500 pixels. (in practice this is Z+500 microns)
 
+# Main function, input is an OCT image, output is filtered image.
+# Inputs:
+#   img - input image, this code treats (0,0,0) as NaN
+#   min_signal_threshold (optional) - manualy set the threshold underwhich we mask image. If set to nan will apply an algorithm to compute threshold
+def mask_image(img, min_signal_threshold=np.nan):
+
+  # Input checks and input image conversion
+  assert(img.dtype == np.uint8)
+  float_img = img.astype(np.float64)/255.0
+  float_img[img==0] = np.nan # Treat 0 as NaN
+
+  # We smooth input image and compute the filter on the smooth version to prevent sharp edges
+  filt_img = smooth(float_img)
+
+  # Areas with low OCT signal usually don't have any useful information, we find a threshold
+  # and filter out the image below it (usually at the bottom of the image)
+  if np.isnan(min_signal_threshold):
+    min_signal_threshold = find_min_signal(filt_img)
+  filt_img[filt_img < min_signal_threshold] = 0
+
+  # Filtering out the gel is usful since we don't care about the gel area for histology
+  filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img)
+
+  # Apply filter on original image and convert to output format
+  float_img[(filt_img == 0.0) | np.isnan(filt_img)] = 0
+  img = (float_img*255).astype(np.uint8)
+  return img, filt_img, filter_top_bottom, min_signal_threshold
+
+
 def get_first_zero_and_next_non_zero_idx(arr):
   """
   For an input array <arr>, returns the first zero index i_0, and the next non-zero index i_1 > i_0.
@@ -22,18 +51,6 @@ def get_first_zero_and_next_non_zero_idx(arr):
   tmp[:first_zero] = 0
   next_non_zero = (tmp>0).argmax(axis=0)
   return first_zero, next_non_zero
-
-def mask_image(img):
-  assert(img.dtype == np.uint8)
-  float_img = img.astype(np.float64)/255.0
-  float_img[img==0] = np.nan
-  filt_img = smooth(float_img)
-  min_signal = find_min_signal(filt_img)
-  filt_img[filt_img < min_signal] = 0
-  filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img, min_signal)
-  float_img[(filt_img == 0.0) | np.isnan(filt_img)] = 0
-  img = (float_img*255).astype(np.uint8)
-  return img, filt_img, filter_top_bottom
 
 
 def find_the_longest_non_zero_row(m_mean_arr):
@@ -62,7 +79,7 @@ def find_the_longest_non_zero_row(m_mean_arr):
 
 
 
-def blackout_out_of_tissue_gel(filt_img, img, min_signal, top_bottom_10percent_assumption = False):
+def blackout_out_of_tissue_gel(filt_img, img, top_bottom_10percent_assumption = False):
   if top_bottom_10percent_assumption:
     blackout_10percent(filt_img)
   # get mean over x axis (rows) to get one value for each depth, for new thresholded image.
