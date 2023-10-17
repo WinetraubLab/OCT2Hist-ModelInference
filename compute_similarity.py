@@ -22,7 +22,9 @@ def compute_similarity (im1, im2, blur_radius=0):
       score, _ = ssim(gray1, gray2, full=True)
       return score
     
-# Blur the images
-blurred_im1 = blur_image(im1, blur_radius)
-blurred_im2 = blur_image(im2, blur_radius)
-return calculate_ssim(blurred_im1,blurred_im2)
+  # Blur the images
+  blurred_im1 = blur_image(im1, blur_radius)
+  blurred_im2 = blur_image(im2, blur_radius)
+
+  # Compute simularity
+  return calculate_ssim(blurred_im1,blurred_im2)
