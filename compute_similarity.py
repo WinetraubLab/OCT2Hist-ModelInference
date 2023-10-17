@@ -1,6 +1,7 @@
 # This module computes similarity between two images for a given resolution
 
 import cv2
+import numpy as np
 from skimage import color
 from skimage.metrics import structural_similarity as ssim
 
