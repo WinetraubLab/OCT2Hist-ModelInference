@@ -10,7 +10,7 @@ from skimage.metrics import structural_similarity as ssim
 def compute_similarity (im1, im2, blur_radius=0):
   
   def blur_image(image, blur_radius):
-    return cv2.GaussianBlur(image, (radius, radius), 0)
+    return cv2.GaussianBlur(image, (blur_radius, blur_radius), 0)
 
   # Function to calculate SSIM between two images
   def calculate_ssim(image1, image2):
