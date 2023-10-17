@@ -18,7 +18,7 @@ def compute_similarity (im1, im2, blur_radius=0):
   
       # Compute different similarities
       ssim1, _ = ssim(gray1, gray2, full=True)
-      mse1 = mse(gray1, gray2, full=True)
+      mse1 = mse(gray1, gray2)
 
       return ssim1, mse1
     
