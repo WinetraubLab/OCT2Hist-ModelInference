@@ -27,7 +27,7 @@ def compute_similarity (im1, im2, blur_radius=0):
   blurred_im2 = blur_image(im2, blur_radius)
 
   # Compute simularity
-  return calculate_ssim(blurred_im1,blurred_im2),
+  return calculate_similarity(blurred_im1,blurred_im2),
 
 # Blur image using gauissian filter
 def blur_image(image, blur_radius):
