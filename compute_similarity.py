@@ -17,10 +17,10 @@ def compute_similarity (im1, im2, blur_radius=0):
       gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
   
       # Compute different similarities
-      ssim, _ = ssim(gray1, gray2, full=True)
-      mse = mse(gray1, gray2, full=True)
+      ssim1, _ = ssim(gray1, gray2, full=True)
+      mse1 = mse(gray1, gray2, full=True)
 
-      return ssim, mse
+      return ssim1, mse1
     
   # Blur the images
   blurred_im1 = blur_image(im1, blur_radius)
