@@ -15,8 +15,13 @@ from copy import deepcopy
 
 # Main function, input is an OCT image, output is filtered image.
 # Inputs:
-#   img - input image, this code treats (0,0,0) as NaN
-#   min_signal_threshold (optional) - manualy set the threshold underwhich we mask image. If set to nan will apply an algorithm to compute threshold
+#   img - input image, this code treats (0,0,0) as NaN.
+#   min_signal_threshold (optional) - manualy set the threshold underwhich we mask image. If set to nan will apply an algorithm to compute threshold.
+# Outputs:
+#   img - filtered input image.
+#   boolean_mask - set to true for all pixels kept, false for all pixels removed (set to 0).
+#                  to apply boolean mask use (boolean_mask * img) where img is n by m by 3 matrix.
+#   filter_top_bottom, min_signal_threshold are keped for debug purposes.
 def mask_image(img, min_signal_threshold=np.nan):
 
   # Input checks and input image conversion
@@ -36,10 +41,13 @@ def mask_image(img, min_signal_threshold=np.nan):
   # Filtering out the gel is usful since we don't care about the gel area for histology
   filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img)
 
+  # Extract the bollean mask
+  boolean_mask = ~((filt_img == 0.0) | np.isnan(filt_img))
+
   # Apply filter on original image and convert to output format
-  float_img[(filt_img == 0.0) | np.isnan(filt_img)] = 0
+  float_img = float_img * boolean_mask
   img = (float_img*255).astype(np.uint8)
-  return img, filt_img, filter_top_bottom, min_signal_threshold
+  return img, boolean_mask, filter_top_bottom, min_signal_threshold
 
 
 def get_first_zero_and_next_non_zero_idx(arr):
