@@ -34,7 +34,7 @@ def run_network (oct_image,
 
 
   # Apply resolution matching
-  original_height, original_width = oct_image.shape[:2]
+  original_height, original_width = masked_image.shape[:2]
   if appy_resolution_matching:
     # Compute compression ratio
     target_width = original_width * microns_per_pixel_x // 4 # Target resolution is 4 microns per pixel on x axis. We use // to round to integer
@@ -44,9 +44,9 @@ def run_network (oct_image,
       raise ValueError(f"OCT2Hist works on images which have total size of 1024 microns by 512 microns (x,z). Input oct_image has size of {original_width*microns_per_pixel_x} by {original_height*microns_per_pixel_z} microns. Please crop or pad image")
 
     # Apply the resolution change
-    o2h_input = cv2.resize(oct_image, [target_height,target_width] , interpolation=cv2.INTER_AREA)
+    o2h_input = cv2.resize(masked_image, [target_height,target_width] , interpolation=cv2.INTER_AREA)
   else:
-    o2h_input = oct_image
+    o2h_input = masked_image
 
   # Run the neural net
   virtual_histology_image = pix2pix.run_network(o2h_input,"oct2hist")
@@ -55,3 +55,4 @@ def run_network (oct_image,
   virtual_histology_image_resized = cv2.resize(virtual_histology_image, [original_width,original_height] , interpolation=cv2.INTER_AREA)
 
   return virtual_histology_image_resized, masked_image, o2h_input
+
