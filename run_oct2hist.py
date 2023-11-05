@@ -21,7 +21,7 @@ import torch
 from segment_anything import sam_model_registry, SamPredictor
 
 import oct2hist
-from OCT2Hist_UseModel.utils.masking import get_sam_input_points, show_points, show_mask
+from OCT2Hist_UseModel.utils.masking import get_sam_input_points, show_points, show_mask, mask_gel_and_low_signal
 
 # from google.colab import drive
 
@@ -44,37 +44,41 @@ all_images = os.listdir(image_directory)
 filtered_images = [img for img in all_images if "real_A" in img]
 random.shuffle(filtered_images)
 filtered_images = filtered_images[:100]
+
+
+def measure_performance():
+    pass
+
+
 for filename in filtered_images:
     # oct_input_image_path = "/Users/dannybarash/Library/CloudStorage/GoogleDrive-dannybarash7@gmail.com/Shared drives/Yolab - Current Projects/_Datasets/2020-11-10 10x Raw Data Used In Paper (Paper V2)/LE-03 - Slide04_Section01 (Fig 3.b)/OCTAligned.tiff"  # @param {type:"string"}
     oct_input_image_path = os.path.join(image_directory, filename)
     # Load OCT image
     oct_image = cv2.imread(oct_input_image_path)
     oct_image = cv2.cvtColor(oct_image, cv2.COLOR_BGR2RGB)
-    #is it sheered?
-    right_column = oct_image.shape[1]-1
-    if (oct_image[:,0,0] == 0).all() or (oct_image[:,right_column,0] == 0).all():
+    # is it sheered?
+    right_column = oct_image.shape[1] - 1
+    if (oct_image[:, 0, 0] == 0).all() or (oct_image[:, right_column, 0] == 0).all():
         continue
     # OCT image's pixel size
     microns_per_pixel_z = 1
     microns_per_pixel_x = 1
 
-    # crop
+    # no need to crop - the current folder contains pre cropped images.
     # cropped = crop_oct(oct_image)
 
+    # workaround: for some reason the images look close to the target shape, but not exactly.
     oct_image = cv2.resize(oct_image, [1024, 512], interpolation=cv2.INTER_AREA)
 
+    # for good input points, we need the gel masked out.
+    masked_gel_image = mask_gel_and_low_signal(oct_image)
+
     # run vh&e
-    virtual_histology_image, masked_image, o2h_input = oct2hist.run_network(oct_image,
-                                                                                             microns_per_pixel_x=microns_per_pixel_x,
-                                                                                             microns_per_pixel_z=microns_per_pixel_z)
-    # #@title Masked Image
-    # showImg(masked_image)
-    # #@title Pre Processing Results (before - left, after preprocessing - right)
-    # showTwoImgs(oct_image, o2h_input)
-    # #@title Final Results
-    # showTwoImgs(cropped, virtual_histology_image)
+    virtual_histology_image, _, o2h_input = oct2hist.run_network(oct_image,
+                                                                 microns_per_pixel_x=microns_per_pixel_x,
+                                                                 microns_per_pixel_z=microns_per_pixel_z)
     # mask
-    input_point, input_label = get_sam_input_points(masked_image, virtual_histology_image)
+    input_point, input_label = get_sam_input_points(masked_gel_image, virtual_histology_image)
 
     predictor.set_image(virtual_histology_image)
     masks, scores, logits = predictor.predict(point_coords=input_point, point_labels=input_label,
@@ -88,7 +92,9 @@ for filename in filtered_images:
         plt.title(f"Mask {i + 1}, Score: {score:.3f}", fontsize=18)
         plt.axis('off')
         plt.show()
-    print(f"Image {filename} ready.")
+
+    iou = measure_performance()
+    print(f"Image {filename} iou:{iou}")
 
 # score
 # @title Notebook Inputs { display-mode: "form" }
