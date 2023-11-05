@@ -42,16 +42,17 @@ def setup_network(
     
     # Install dependencies
     _run_subprocess(f'pip install -r {base_folder}/requirements.txt')
-    print(f'Installed requirements for pix2pix.')
+
+    # Create directories needed for the model
+    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/')
+    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/{model_name}/')
     
-    # Mount google drive (if not already mounted)
-    print(f'Mounting drive: if it takes too long, restart.')
+    # Mount google drive (if not already mounted) in order to gain access to weights
+    print(f'Mounting drive: if it takes >30 sec, re-run.')
     drive.mount('/content/drive/')
     print(f'Drive mounted.')
 
     # Copy model parameters to the correct location
-    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/')
-    _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/{model_name}/')
     _run_subprocess(f'cp "{path_to_generaor_network}" {base_folder}/checkpoints/{model_name}/latest_net_G.pth')
 
 # This function evaluates the neural network on input image
