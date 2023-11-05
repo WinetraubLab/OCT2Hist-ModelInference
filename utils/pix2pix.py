@@ -41,9 +41,8 @@ def setup_network(
     ):
     
     # Install dependencies
-    # _run_subprocess(f'pip install -r {base_folder}/requirements.txt')
-    print(f'Install requirements in colab by running:')
-    print(f'pip install -r {base_folder}/requirements.txt')
+    _run_subprocess(f'pip install -r {base_folder}/requirements.txt')
+    print(f'Installed requirements for pix2pix.')
     
     # Mount google drive (if not already mounted)
     drive.mount('/content/drive/')
