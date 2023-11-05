@@ -3,7 +3,7 @@ import cv2;
 
 from utils.show_images import readImgByPath
 from copy import deepcopy
-
+from utils.show_images import showImg
 #high level masking description:
 # (2) "Blackout" everything way above and way below the tissue-gel interface
 # The idea is that anything that is much higher than the tissue-gel interface is not relevant because it is deep in the gel, and anything way below the interface is also not relevant because it is deep in the tissue and we don't get OCT signal that deep.
@@ -50,6 +50,34 @@ def mask_image(img, min_signal_threshold=np.nan):
   return img, boolean_mask, filter_top_bottom, min_signal_threshold
 
 
+
+def mask_image_gel(img, min_signal_threshold=np.nan):
+
+  # Input checks and input image conversion
+  assert(img.dtype == np.uint8)
+  float_img = img.astype(np.float64)/255.0
+  float_img[img==0] = np.nan # Treat 0 as NaN
+
+  # We smooth input image and compute the filter on the smooth version to prevent sharp edges
+  filt_img = smooth(float_img)
+
+  # Areas with low OCT signal usually don't have any useful information, we find a threshold
+  # and filter out the image below it (usually at the bottom of the image)
+  if np.isnan(min_signal_threshold):
+    filt_img = np.nan_to_num(filt_img)
+    min_signal_threshold = find_min_gel_signal(filt_img)
+  filt_img[filt_img < min_signal_threshold] = 0
+
+  # Filtering out the gel is usful since we don't care about the gel area for histology
+  # filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img)
+
+  # Extract the bollean mask
+  boolean_mask = ~((filt_img == 0.0) | np.isnan(filt_img))
+  # Apply filter on original image and convert to output format
+  float_img = float_img * boolean_mask
+  img = (float_img*255).astype(np.uint8)
+  return img, boolean_mask, min_signal_threshold
+
 def get_first_zero_and_next_non_zero_idx(arr):
   """
   For an input array <arr>, returns the first zero index i_0, and the next non-zero index i_1 > i_0.
@@ -90,7 +118,7 @@ def find_the_longest_non_zero_row(m_mean_arr):
 def blackout_out_of_tissue_gel(filt_img, img, top_bottom_10percent_assumption = False):
   if top_bottom_10percent_assumption:
     blackout_10percent(filt_img)
-  # get mean over x axis (rows) to get one value for each depth, for new thresholded image.
+  # get mean over x axis (rows) to get one value for each depth coord (line), for new thresholded image.
   m_mean = np.nanmean(filt_img, axis=1)
   m_mean_arr = np.copy(m_mean[:, 0])
   begin,end = find_the_longest_non_zero_row(m_mean_arr)
@@ -116,6 +144,15 @@ def find_min_signal(filt_img):
   minSignal = 0.28 * (m_mean_max - m_mean_min) + m_mean_min
   return minSignal
 
+def find_min_gel_signal(filt_img):
+  # Average over x axis (rows) to get one value for each depth
+  m_mean = np.nanmean(filt_img[:, :, 0], axis=1)
+  # Then we figure out what is the "brightest" row by taking percentile:
+  m_mean_max = np.percentile(m_mean, 99, axis=0)
+  m_mean_min = np.mean(m_mean[:20])
+  # Finally we define a threshold for OCT intensity, anything below that will be blacked out
+  minSignal = 0.28 * (m_mean_max - m_mean_min) + m_mean_min
+  return minSignal
 
 def get_rows_min_max(filt_img):
   # Average over x axis (rows) to get one value for each depth
@@ -148,13 +185,125 @@ def oct_get_image_and_preprocess(oct_input_image_path):
   # you don't want to save H&E image to drive.
   histology_output_image_folder = ""
 
+def _get_mask_outline(mask):
+  # Dimensions of sam_mask
+  num_rows = len(mask)
+  num_cols = len(mask[0])
+  xs = []
+  top_ys = []
+  bottom_ys = []
+
+  # Iterate over all x positions
+  for x in range(num_cols):
+      top_y = None
+      bottom_y = None
+
+      # Iterate over y positions
+      for y in range(num_rows):
+          if mask[y][x] > 0:
+              if top_y is None:
+                  top_y = y
+              bottom_y = y
+
+      # Check if any True value was found in the column
+      if top_y is not None:
+        xs.append(x)
+        top_ys.append(top_y)
+        bottom_ys.append(bottom_y)
+
+  xs = np.array(xs)
+  top_ys = np.array(top_ys)
+  bottom_ys = np.array(bottom_ys)
+
+  return xs, top_ys, bottom_ys
 
 
+
+def show_points(coords, labels, ax, marker_size=375):
+  pos_points = coords[labels == 1]
+  neg_points = coords[labels == 0]
+  ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='white',
+             linewidth=1.25)
+  ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='white',
+             linewidth=1.25)
+
+def show_points_helper(input_point, input_label, img):
+  input_point = np.array(input_point)
+  input_label = np.array(input_label)
+  plt.figure(figsize=(10, 10))
+  plt.imshow(img)
+  show_points(input_point, input_label, plt.gca())
+  plt.axis('on')
+  plt.show()
+
+def _add_points_to_point_label(xy_tuple, label, input_point, input_label):
+  x = xy_tuple[0]
+  y = xy_tuple[1]
+  for i in range(len(x)):
+    pt = [x[i], y[i]]
+    input_point.append(pt)
+    input_label.append(label)
+
+  return input_point, input_label
+
+def _mask_outline_to_points_of_interest(xs, ys, offset, n_points):
+  indexes = np.linspace(0, len(xs) - 1, n_points + 2, dtype=int)
+  # indexes = indexes[1:-1]
+  xs = np.array(xs[indexes], dtype=int)
+  ys = np.array(ys[indexes], dtype=int)
+  offset = int(offset)
+
+  points_x = xs
+  points_y = ys + offset
+
+  return points_x, points_y
+
+def get_sam_input_points(no_gel_filt_img, virtual_histology_image = None):
+  xs_um, top_yps_um, bottom_ys_um = _get_mask_outline(no_gel_filt_img[:, :, 0])
+  scale = 1
+
+  # Remove from outline areas that top and bottom are too close
+  threshold_um = 50 / scale
+  indices_to_keep = np.where(bottom_ys_um - top_yps_um > threshold_um)
+  xs_um = xs_um[indices_to_keep]
+  top_yps_um = top_yps_um[indices_to_keep]
+  bottom_ys_um = bottom_ys_um[indices_to_keep]
+
+  input_point, input_label = _add_points_to_point_label(
+    _mask_outline_to_points_of_interest(
+      xs_um, top_yps_um, offset=0, n_points=9), 0,
+    [], [])  # Epidermis
+  # show_points_helper(input_point, input_label, virtual_histology_image)
+  input_point, input_label = _add_points_to_point_label(
+    _mask_outline_to_points_of_interest(
+      xs_um, top_yps_um, offset=40 / scale, n_points=9), 1,
+    input_point, input_label)  # Epidermis
+  # show_points_helper(input_point, input_label, virtual_histology_image)
+  input_point, input_label = _add_points_to_point_label(
+    _mask_outline_to_points_of_interest(
+      xs_um, bottom_ys_um, offset=-10 / scale, n_points=9), 0,
+    input_point, input_label)  # Dermis
+  # show_points_helper(input_point, input_label, virtual_histology_image)
+  input_point = np.array(input_point)
+  input_label = np.array(input_label)
+  return input_point, input_label
+
+
+
+# visualize
+def show_mask(mask, ax, random_color=False):
+    if random_color:
+        color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
+    else:
+        color = np.array([30 / 255, 144 / 255, 255 / 255, 0.6])
+    h, w = mask.shape[-2:]
+    mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
+    ax.imshow(mask_image)
 
 if __name__ == '__main__':
-  o2h_input = oct_get_image_and_preprocess("/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_input.tiff")
+  o2h_input = oct_get_image_and_preprocess("/Users/dannybarash/Code/oct/OCT2Hist_UseModel/baseline_input.tiff")
 
-  oct_input_image_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_input.tiff"
+  oct_input_image_path = "/Users/dannybarash/Code/oct/OCT2Hist_UseModel/baseline_input.tiff"
   oct_image_orig = cv2.imread(oct_input_image_path)
   oct_image_orig = cv2.cvtColor(oct_image_orig, cv2.COLOR_BGR2RGB)
 
@@ -163,6 +312,6 @@ if __name__ == '__main__':
   mask[(mask > 0)] = 1
   #reverse colors
   mask = 1- mask
-  mask_path = "/Users/dannybarash/Code/oct/OCT2Hist-UseModel/baseline_mask.tiff"
+  mask_path = "/Users/dannybarash/Code/oct/OCT2Hist_UseModel/baseline_mask.tiff"
   gt_mask = cv2.imread(mask_path)
   gt_mask = cv2.cvtColor(gt_mask, cv2.COLOR_BGR2RGB)
