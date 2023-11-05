@@ -65,27 +65,19 @@ def mask_image(img, min_signal_threshold=np.nan):
   # Areas with low OCT signal usually don't have any useful information, we find a threshold
   # and filter out the image below it (usually at the bottom of the image)
   if np.isnan(min_signal_threshold):
-    filt_img = np.nan_to_num(filt_img)
     min_signal_threshold = find_min_signal(filt_img)
-    gel_threshold = find_min_gel_signal(filt_img)
   filt_img[filt_img < min_signal_threshold] = 0
-  no_gel_filt_img = filt_img.copy()
-  no_gel_filt_img[no_gel_filt_img < gel_threshold] = 0
 
   # Filtering out the gel is usful since we don't care about the gel area for histology
   filt_img, filter_top_bottom = blackout_out_of_tissue_gel(filt_img, float_img)
 
   # Extract the bollean mask
   boolean_mask = ~((filt_img == 0.0) | np.isnan(filt_img))
+
   # Apply filter on original image and convert to output format
   float_img = float_img * boolean_mask
   img = (float_img*255).astype(np.uint8)
-  ##
-  boolean_mask2 = ~((no_gel_filt_img == 0.0) | np.isnan(no_gel_filt_img))
-  float_img = float_img * boolean_mask2
-  img2 = (float_img*255).astype(np.uint8)
-  ##
-  return img, img2, boolean_mask, filter_top_bottom, min_signal_threshold
+  return img, boolean_mask, filter_top_bottom, min_signal_threshold
 
 
 def get_first_zero_and_next_non_zero_idx(arr):
@@ -128,7 +120,7 @@ def find_the_longest_non_zero_row(m_mean_arr):
 def blackout_out_of_tissue_gel(filt_img, img, top_bottom_10percent_assumption = False):
   if top_bottom_10percent_assumption:
     blackout_10percent(filt_img)
-  # get mean over x axis (rows) to get one value for each depth coord (line), for new thresholded image.
+  # get mean over x axis (rows) to get one value for each depth, for new thresholded image.
   m_mean = np.nanmean(filt_img, axis=1)
   m_mean_arr = np.copy(m_mean[:, 0])
   begin,end = find_the_longest_non_zero_row(m_mean_arr)
