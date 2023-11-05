@@ -1,5 +1,5 @@
 from utils.show_images import *
-from utils.masking import mask_image
+from utils.masking import mask_image, mask_image_gel
 from utils.gray_level_rescale import gray_level_rescale
 import utils.pix2pix as pix2pix
 import cv2
