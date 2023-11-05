@@ -45,7 +45,9 @@ def setup_network(
     print(f'Installed requirements for pix2pix.')
     
     # Mount google drive (if not already mounted)
+    print(f'Mounting drive: if it takes too long, restart.')
     drive.mount('/content/drive/')
+    print(f'Drive mounted.')
 
     # Copy model parameters to the correct location
     _create_folder_if_doesnt_exist(f'{base_folder}/checkpoints/')
