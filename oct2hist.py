@@ -1,5 +1,5 @@
 from utils.show_images import *
-from utils.masking import mask_image, mask_image_gel
+from utils.masking import mask_image
 from utils.gray_level_rescale import gray_level_rescale
 import utils.pix2pix as pix2pix
 import cv2
@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Run this function to set up the Neural Network with Pre-trained oct2hist generator network
+
+def setup_network():
+  pix2pix.setup_network("/content/drive/Shareddrives/Yolab - Current Projects/_Datasets/2020-11-10 10x OCT2Hist Model (Paper V2)/latest_net_G.pth","oct2hist")
+
 def run_network (oct_image,
                 microns_per_pixel_x=1,
                 microns_per_pixel_z=1,
