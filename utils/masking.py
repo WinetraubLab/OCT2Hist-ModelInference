@@ -1,6 +1,7 @@
 import numpy as np;
 import cv2;
 
+from utils.gray_level_rescale import gray_level_rescale
 from utils.show_images import readImgByPath
 from copy import deepcopy
 from utils.show_images import showImg
@@ -79,6 +80,20 @@ def mask_image(img, min_signal_threshold=np.nan):
   img = (float_img*255).astype(np.uint8)
   return img, boolean_mask, filter_top_bottom, min_signal_threshold
 
+def mask_gel_and_low_signal(oct_image,
+                min_signal_threshold=np.nan,
+                apply_gray_level_scaling=True,
+                ):
+
+  if apply_gray_level_scaling:
+    oct_image = gray_level_rescale(oct_image)
+  else:
+    oct_image = oct_image
+
+  # Mask
+  masked_image, *_ = mask_image_gel(oct_image, min_signal_threshold=min_signal_threshold)
+
+  return masked_image
 
 def get_first_zero_and_next_non_zero_idx(arr):
   """
