@@ -27,4 +27,6 @@ def find_crop_coords(input_image):
 
 def crop_oct(input_image):
     target_width, target_height, x0, z0 = find_crop_coords(input_image)
-    return crop(input_image, target_width=1024, target_height=512, x0=x0, z0=z0)
+    coords = {"target_width": target_width, "target_height": target_height, "x0": x0, "z0": z0}
+    cropped_img = crop(input_image, **coords)
+    return cropped_img, coords
