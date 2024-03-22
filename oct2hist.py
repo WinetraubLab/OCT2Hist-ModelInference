@@ -12,7 +12,7 @@ def setup_network():
 
 # This function evaluates the neural network on input image
 # Inputs:
-#   oct_image - input oct image in cv format (256x256x3). Input image should be scanned with 10x lens and z-stacked
+#   oct_image - input oct image in gray scale (256x256x3). Input image should be scanned with 10x lens and z-stacked
 #   microns_per_pixel_x - how many microns is each pixel on x direction (lateral direction). This is determined by B-Scan parameters, not the lens.
 #   microns_per_pixel_z - how many microns is each pixel on z direction (axial direction). This is determined by spectrumeter width not light source FWHM.
 # Preprocessing configuration. Set this parameters to false if you would like to skip them
@@ -21,7 +21,7 @@ def setup_network():
 #   apply_gray_level_scaling - should we rescale gray level to take full advantage of dynamic range?
 #   appy_resolution_matching - should we match resolution to the trained images?
 # Outputs:
-#   output image (in target domain, e.g. virtual histology) in cv format
+#   output image (in target domain, e.g. virtual histology) in RGB format
 #   masked_image - if apply_masking=true, otherwise it will be identical to im 
 #   network_input_image - the image that is loaded to the network
 def run_network (oct_image, 
