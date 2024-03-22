@@ -57,11 +57,11 @@ def setup_network(
 
 # This function evaluates the neural network on input image
 # Inputs:
-#   im - input image (input domain, e.g. OCT) in cv format (256x256x3). Input image should be masked and cropped.
+#   im - input image (input domain, e.g. OCT) in gray scale (256x256x3). Input image should be masked and cropped.
 #   model_name - same name as you gave the model in setup_network step
 #   netG_flag - specify --netG
 # Outputs:
-#   output image (in target domain, e.g. virtual histology) in cv format
+#   output image (in target domain, e.g. virtual histology) in RGB format
 def run_network (im, model_name, netG_flag="--netG resnet_9blocks"):
     
     # Input check
