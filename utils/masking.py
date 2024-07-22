@@ -131,8 +131,8 @@ def find_the_longest_non_zero_row(m_mean_arr):
   return longest_count_start, longest_count_end
 
 
-
 def blackout_out_of_tissue_gel(filt_img, img, top_bottom_10percent_assumption = False):
+  ''' This function identifies the gel/tissue interface, and make sure to not black out the gel part '''
   if top_bottom_10percent_assumption:
     blackout_10percent(filt_img)
   # get mean over x axis (rows) to get one value for each depth, for new thresholded image.
@@ -142,7 +142,13 @@ def blackout_out_of_tissue_gel(filt_img, img, top_bottom_10percent_assumption = 
   mid = int((begin+end)/2)
   # filt_img[:start] = 0
   filter_copy = deepcopy(filt_img)
-  #prepare filter, for the lower half (row > mid), and below signal (filt_img == 0).
+
+  # Check mid's value before applying the filter
+  if mid <= 0:
+    print('blackout_out_of_tissue_gel failed to undentify gel-tissue interface, skipping')
+    return filt_img, filter_copy
+  
+  # Apply filter, for the lower half (row > mid), and below signal (filt_img == 0).
   filt_img[:mid,:,:] = 1
   return filt_img, filter_copy
 
