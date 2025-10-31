@@ -63,14 +63,9 @@ def setup_network(
 # Outputs:
 #   output image (in target domain, e.g. virtual histology) in RGB format
 def run_network (im, model_name, netG_flag="--netG resnet_9blocks"):
-    
-    # Input check
-    if im.shape[:2] != (256, 256):
-        raise ValueError("Image size must be 256x256 pixels to run model on.")
-
-    # Pix2Pix implementation expects 256x512 image. Pad with zeros
-    padded = np.zeros([256,512,3], np.uint8)
-    padded[:,:256,:] = im[:,:,:]
+    H, W = im.shape[:2]
+    padded = np.zeros([H, int(W * 2), 3], np.uint8)
+    padded[:, :W, :] = im
     
     # Write input image in the right folder structure
     images_dir = f"{base_folder}/dataset/test"
@@ -81,7 +76,8 @@ def run_network (im, model_name, netG_flag="--netG resnet_9blocks"):
     cv2.imwrite(im_input_path, padded)
     
     # Run pix2pix
-    _run_subprocess(f'python {base_folder}/test.py {netG_flag} --dataroot "{base_folder}/dataset/"  --model pix2pix --name {model_name} --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000')
+    cmd=f'python {base_folder}/test.py {netG_flag} --dataroot "{base_folder}/dataset/"  --model pix2pix --name {model_name} --checkpoints_dir "{base_folder}/checkpoints" --results_dir "{base_folder}/results" --num_test 1000 --preprocess none'
+    _run_subprocess(cmd)
 
     # Load output image
     im_output_path = f"{base_folder}/results/{model_name}/test_latest/images/im1_fake_B.png"
