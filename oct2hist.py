@@ -37,6 +37,8 @@ def run_network (oct_image,
     masked_image, *_ = mask_image(oct_image, min_signal_threshold=min_signal_threshold)    
   else:
     masked_image = oct_image
+    if min_signal_threshold:
+        masked_image[masked_image < min_signal_threshold] = 0
 
   if apply_gray_level_scaling:
     rescaled_image = gray_level_rescale(masked_image)
